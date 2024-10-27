@@ -73,6 +73,7 @@
     <h2>Select User</h2>
     <label for="userSelect">Select User</label>
     <select id="userSelect" onchange="loadUserProfile()"></select>
+    <button onclick="loadUserProfile()">Select User</button>
 
     <h2>User Profile</h2>
     <div id="userProfile"></div>
@@ -82,12 +83,12 @@
     <select id="recordType">
         <option value="Killing Officer with Genos Build">Killing Officer with Genos Build</option>
         <option value="Assaulting Officer with Genos Build">Assaulting Officer with Genos Build</option>
-         <option value="Killing Officer with Genos Build">Killing Officer with Sonic Build</option>
-        <option value="Assaulting Officer with Genos Build">Assaulting Officer with Sonic Build</option>
-         <option value="Killing Officer with Genos Build">Killing Officer with Garou Build</option>
-        <option value="Assaulting Officer with Genos Build">Assaulting Officer with Garou Build</option>
-         <option value="Killing Officer with Genos Build">Killing Officer with Tatsumaki Build</option>
-        <option value="Assaulting Officer with Genos Build">Assaulting Officer with Tatsumaki</option>
+        <option value="Killing Officer with Sonic Build">Killing Officer with Sonic Build</option>
+        <option value="Assaulting Officer with Sonic Build">Assaulting Officer with Sonic Build</option>
+        <option value="Killing Officer with Garou Build">Killing Officer with Garou Build</option>
+        <option value="Assaulting Officer with Garou Build">Assaulting Officer with Garou Build</option>
+        <option value="Killing Officer with Tatsumaki Build">Killing Officer with Tatsumaki Build</option>
+        <option value="Assaulting Officer with Tatsumaki">Assaulting Officer with Tatsumaki</option>
         <option value="Prey's Peril">Prey's Peril</option>
         <option value="Crushed Rock">Crushed Rock</option>
         <option value="Water Stream Rock Smashing">Water Stream Rock Smashing</option>
@@ -95,11 +96,11 @@
         <option value="Bullet Barrage">Bullet Barrage</option>
         <option value="Whirlwind Drop">Whirlwind Drop</option>
         <option value="Head First">Head First</option>
- <option value="Prey's Peril">M1</option>
-        <option value="Crushed Rock">Split Second Counter</option>
-        <option value="Water Stream Rock Smashing">Pinpoint Cut (Variant 2)</option>
-        <option value="The Final Hunt">Quick Slice</option>
-        <option value="Bullet Barrage">Atmos Cleave</option>
+        <option value="M1">M1</option>
+        <option value="Split Second Counter">Split Second Counter</option>
+        <option value="Pinpoint Cut (Variant 2)">Pinpoint Cut (Variant 2)</option>
+        <option value="Quick Slice">Quick Slice</option>
+        <option value="Atmos Cleave">Atmos Cleave</option>
     </select>
 
     <label for="recordCount">Number of Times</label>
@@ -224,8 +225,8 @@
         const killConfirmation = document.getElementById('killConfirmation').value;
         const emoteConfirmation = document.getElementById('emoteConfirmation').value;
         const emoteType = emoteConfirmation === "Yes" ? document.getElementById('emoteType').value : null;
-        const threatLevel = document.getElementById('threatLevel').value;
         const recordNotes = document.getElementById('recordNotes').value;
+        const threatLevel = document.getElementById('threatLevel').value;
 
         if (currentUser) {
             currentUser.records.push({
@@ -234,23 +235,36 @@
                 killed: killConfirmation,
                 emoted: emoteConfirmation,
                 emoteType: emoteType,
-                threatLevel: threatLevel,
-                notes: recordNotes
+                notes: recordNotes,
+                threatLevel: threatLevel
             });
-            displayUserRecords(); // Refresh records display
-            alert("Record added successfully.");
+
+            displayUserRecords();
+            alert("Record added successfully!");
+            clearRecordForm();
         } else {
-            alert("Please select a user to add a record.");
+            alert("Please select a user first.");
         }
     }
 
-    // Toggle emote dropdown visibility
+    // Clear record form
+    function clearRecordForm() {
+        document.getElementById('recordType').selectedIndex = 0;
+        document.getElementById('recordCount').value = '';
+        document.getElementById('killConfirmation').selectedIndex = 0;
+        document.getElementById('emoteConfirmation').selectedIndex = 0;
+        toggleEmoteDropdown();
+        document.getElementById('recordNotes').value = '';
+        document.getElementById('threatLevel').selectedIndex = 0;
+    }
+
+    // Toggle emote dropdown
     function toggleEmoteDropdown() {
         const emoteDropdown = document.getElementById('emoteDropdown');
         const emoteConfirmation = document.getElementById('emoteConfirmation').value;
         emoteDropdown.classList.toggle('hidden', emoteConfirmation !== 'Yes');
     }
 </script>
-
 </body>
 </html>
+
