@@ -57,254 +57,74 @@
             border-radius: 5px;
             background-color: #222;
         }
-        .loading-dots {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            background-color: white;
-            border-radius: 50%;
-            margin: 0 4px;
-            animation: bounce 0.6s infinite alternate;
-        }
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
-        }
-        .help-line {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 1.2em;
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Login Form -->
-    <div id="loginSection">
-        <h1>PRM - Police Record Maker</h1>
-        <h2>Login</h2>
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter Username">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter Password">
-        <button onclick="login()">Login</button>
-        <p id="loginError" style="color: red;"></p>
+    <!-- Main Section -->
+    <h1>PRM - Police Record Maker</h1>
 
-        <!-- Animated Dots for Loading -->
-        <div class="loading-dots hidden" id="loginLoading">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
+    <h2>Add Record</h2>
+    <label for="recordType">Record Type</label>
+    <select id="recordType">
+        <option value="Prey's Peril">Prey's Peril</option>
+        <option value="Crushed Rock">Crushed Rock</option>
+        <option value="Water Stream Rock Smashing">Water Stream Rock Smashing</option>
+        <option value="The Final Hunt">The Final Hunt</option>
+        <option value="Bullet Barrage">Bullet Barrage</option>
+        <option value="Whirlwind Drop">Whirlwind Drop</option>
+        <option value="Head First">Head First</option>
+    </select>
+
+    <label for="recordCount">Number of Times</label>
+    <input type="number" id="recordCount" min="1" placeholder="Enter number of times">
+
+    <label for="didTheyKillYou">Did they kill you with it?</label>
+    <select id="didTheyKillYou">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select>
+
+    <label for="didTheyEmote">Did they emote on you?</label>
+    <select id="didTheyEmote" onchange="toggleEmoteTypes()">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select>
+
+    <div id="emoteTypes" class="hidden">
+        <label for="emoteSelect">Select Emote Type</label>
+        <select id="emoteSelect">
+            <option value="L">L</option>
+            <option value="RAHHH">RAHHH</option>
+            <option value="Garbage">Garbage</option>
+        </select>
     </div>
 
-    <!-- Main Section (Visible After Login) -->
-    <div id="mainSection" class="hidden">
-        <h2>Create New User (Record Subject)</h2>
-        <label for="newUserName">Name of Person</label>
-        <input type="text" id="newUserName" placeholder="Enter Name">
-        <button onclick="createNewUser()">Create User</button>
+    <label for="threatLevel">Threat Level</label>
+    <select id="threatLevel">
+        <option value="Police Level Threat">Police Level Threat</option>
+        <option value="Swat Level Threat">Swat Level Threat</option>
+        <option value="Console Level Threat">Console Level Threat</option>
+        <option value="Hacker Level Threat">Hacker Level Threat</option>
+        <option value="Skilled Hacker Level Threat">Skilled Hacker Level Threat</option>
+    </select>
 
-        <h2>Select User</h2>
-        <label for="userSelect">Select User</label>
-        <select id="userSelect"></select>
-        <button onclick="loadUserProfile()">Load User Profile</button>
-
-        <h2>Add Record</h2>
-        <label for="recordType">Record Type</label>
-        <select id="recordType">
-            <option value="Crushing Pull">Crushing Pull</option>
-            <option value="Exploding Shuriken">Exploding Shuriken</option>
-            <option value="Flash Strike">Flash Strike</option>
-            <option value="Scatter">Scatter</option>
-            <option value="Blitz Shot">Blitz Shot</option>
-            <option value="Jet Dive">Jet Dive</option>
-            <option value="Machine Gun Blows">Machine Gun Blows</option>
-        </select>
-        
-        <label for="recordCount">Number of Times</label>
-        <input type="number" id="recordCount" min="1" placeholder="Enter number of times">
-
-        <label for="killed">Did they kill you with it?</label>
-        <select id="killed">
-            <option value="No">No</option>
-            <option value="Yes">Yes</option>
-        </select>
-
-        <div id="emoteSection" class="hidden">
-            <label for="emoteUsed">Did they emote on you?</label>
-            <select id="emoteUsed" onchange="toggleEmoteDropdown()">
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-            </select>
-            
-            <label for="emoteType" class="hidden" id="emoteLabel">Select Emote Type</label>
-            <select id="emoteType" class="hidden">
-                <option value="L">L</option>
-                <option value="RAHHH">RAHHH</option>
-                <option value="Garbage">Garbage</option>
-            </select>
-        </div>
-
-        <label for="recordNotes">Additional Notes (Optional)</label>
-        <textarea id="recordNotes" placeholder="Enter any relevant notes"></textarea>
-        <button onclick="addRecord()">Add Record</button>
-
-        <!-- Loading dots for record addition -->
-        <div class="loading-dots hidden" id="recordLoading">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-
-        <h2>Records</h2>
-        <div id="recordList"></div>
-    </div>
+    <button onclick="submitRecord()">Submit Record</button>
 </div>
 
 <script>
-    const validUsername = "Titanlock";
-    const validPassword = "titanlock";
-    let loggedIn = false;
-    let users = [];
-    let currentUser = null;
-
-    // Login function
-    function login() {
-        const loginError = document.getElementById('loginError');
-        const loginLoading = document.getElementById('loginLoading');
-        loginLoading.classList.remove('hidden');
-
-        setTimeout(() => {
-            loginLoading.classList.add('hidden');
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            if (username === validUsername && password === validPassword) {
-                loggedIn = true;
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('mainSection').classList.remove('hidden');
-            } else {
-                loginError.innerHTML = "Invalid username or password!";
-            }
-        }, 1000);
+    function toggleEmoteTypes() {
+        const emoteSelect = document.getElementById('emoteTypes');
+        const didTheyEmote = document.getElementById('didTheyEmote').value;
+        emoteSelect.style.display = didTheyEmote === 'Yes' ? 'block' : 'none';
     }
 
-    // Create new user function
-    function createNewUser() {
-        const newUserName = document.getElementById('newUserName').value;
-        if (newUserName) {
-            users.push({ name: newUserName, records: [] });
-            updateUserSelect();
-            alert(`User "${newUserName}" created successfully.`);
-            document.getElementById('newUserName').value = '';
-        } else {
-            alert("Please enter a name for the user.");
-        }
-    }
-
-    // Update user dropdown
-    function updateUserSelect() {
-        const userSelect = document.getElementById('userSelect');
-        userSelect.innerHTML = '';
-        users.forEach((user, index) => {
-            const option = document.createElement('option');
-            option.value = index; // Use index as value
-            option.textContent = user.name;
-            userSelect.appendChild(option);
-        });
-    }
-
-    // Load user profile
-    function loadUserProfile() {
-        const userSelect = document.getElementById('userSelect');
-        const selectedIndex = userSelect.value;
-
-        if (selectedIndex !== "") {
-            currentUser = users[selectedIndex];
-            displayUserRecords();
-        }
-    }
-
-    // Display user records
-    function displayUserRecords() {
-        const recordList = document.getElementById('recordList');
-        recordList.innerHTML = ''; // Clear current records
-
-        if (currentUser && currentUser.records.length > 0) {
-            currentUser.records.forEach(record => {
-                const recordDiv = document.createElement('div');
-                recordDiv.className = 'record';
-                recordDiv.innerHTML = `
-                    <strong>Type:</strong> ${record.type}<br>
-                    <strong>Count:</strong> ${record.count}<br>
-                    <strong>Killed:</strong> ${record.killed}<br>
-                    <strong>Emote:</strong> ${record.emote}<br>
-                    <strong>Notes:</strong> ${record.notes}<br>
-                `;
-                recordList.appendChild(recordDiv);
-            });
-        } else {
-            recordList.innerHTML = '<p>No records found for this user.</p>';
-        }
-    }
-
-    // Add record function
-    function addRecord() {
-        if (currentUser) {
-            const recordType = document.getElementById('recordType').value;
-            const recordCount = document.getElementById('recordCount').value;
-            const killed = document.getElementById('killed').value;
-            const emoteUsed = document.getElementById('emoteUsed').value;
-            const emoteType = emoteUsed === "Yes" ? document.getElementById('emoteType').value : "None";
-            const recordNotes = document.getElementById('recordNotes').value;
-
-            currentUser.records.push({
-                type: recordType,
-                count: recordCount,
-                killed: killed,
-                emote: emoteType,
-                notes: recordNotes,
-            });
-
-            displayUserRecords();
-            document.getElementById('recordCount').value = '';
-            document.getElementById('recordNotes').value = '';
-            document.getElementById('emoteUsed').value = 'No';
-            document.getElementById('emoteSection').classList.add('hidden');
-        } else {
-            alert("No user selected.");
-        }
-    }
-
-    // Toggle visibility of emote section
-    function toggleEmoteDropdown() {
-        const emoteUsed = document.getElementById('emoteUsed').value;
-        const emoteSection = document.getElementById('emoteSection');
-        const emoteLabel = document.getElementById('emoteLabel');
-        const emoteType = document.getElementById('emoteType');
-
-        if (emoteUsed === "Yes") {
-            emoteSection.classList.remove('hidden');
-            emoteLabel.classList.remove('hidden');
-            emoteType.classList.remove('hidden');
-        } else {
-            emoteSection.classList.add('hidden');
-            emoteLabel.classList.add('hidden');
-            emoteType.classList.add('hidden');
-        }
+    function submitRecord() {
+        // Collect and handle form data here
+        alert('Record submitted!');
     }
 </script>
-
-<div class="help-line">Help Line: 701-951-9071</div>
 
 </body>
 </html>
